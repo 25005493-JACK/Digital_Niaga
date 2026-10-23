@@ -12,6 +12,16 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        canvas: "#f7f8f6",
+        surface: "#ffffff",
+        "surface-subtle": "#f1f4f2",
+        ink: "#17252b",
+        secondary: "#334950",
+        muted: "#64757a",
+        line: "#dce5e1",
+        accent: "#0b6b60",
+        "accent-hover": "#09584f",
+        "accent-soft": "#e7f3ef",
         niaga: {
           50: "#f0fdf9",
           100: "#ccfbef",

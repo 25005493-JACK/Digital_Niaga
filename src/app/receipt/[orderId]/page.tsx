@@ -18,7 +18,10 @@ export default function PublicReceiptPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!orderId) return;
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
 
     // Look up initial order
     const all = getStoredOrders();
@@ -42,11 +45,11 @@ export default function PublicReceiptPage() {
     : undefined;
 
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-100 flex flex-col justify-between p-4 sm:p-6">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col justify-between p-4 sm:p-6">
       <header className="max-w-md mx-auto w-full flex items-center justify-between pb-6">
         <Link
           href="/"
-          className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink"
         >
           <ArrowLeft className="w-4 h-4" /> Back to 1 Utama Food District
         </Link>
@@ -55,19 +58,19 @@ export default function PublicReceiptPage() {
 
       <main className="max-w-md mx-auto w-full space-y-4">
         {loading ? (
-          <div className="text-center py-20 text-slate-400 text-sm flex items-center justify-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-teal-400" />
+          <div className="text-center py-20 text-muted text-sm flex items-center justify-center gap-2">
+            <Loader2 className="w-5 h-5 animate-spin text-accent" />
             Loading digital receipt...
           </div>
         ) : !order || !stall ? (
-          <div className="text-center py-20 bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-3">
-            <h3 className="text-lg font-bold text-slate-200">Receipt Not Found</h3>
-            <p className="text-xs text-slate-400">
+          <div className="text-center py-20 bg-surface border border-line rounded-3xl p-6 space-y-3">
+            <h3 className="text-lg font-bold text-ink">Receipt Not Found</h3>
+            <p className="text-xs text-muted">
               The requested order chit ({orderId}) could not be located.
             </p>
             <Link
               href="/"
-              className="inline-block mt-2 px-4 py-2 rounded-xl bg-teal-500 text-slate-950 font-bold text-xs"
+              className="inline-block mt-2 px-4 py-2 rounded-xl bg-accent text-white font-bold text-xs"
             >
               Browse Stalls
             </Link>
@@ -78,28 +81,36 @@ export default function PublicReceiptPage() {
             <div
               className={`p-4 rounded-2xl border flex items-center gap-3 ${
                 order.order_status === "ready"
-                  ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+                  ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-700"
                   : order.order_status === "preparing"
-                  ? "bg-teal-500/10 border-teal-500/40 text-teal-300"
-                  : "bg-amber-500/10 border-amber-500/40 text-amber-300"
+                  ? "bg-accent-soft border-accent/30 text-accent"
+                  : order.order_status === "completed"
+                  ? "bg-slate-500/10 border-slate-500/40 text-secondary"
+                  : "bg-amber-500/10 border-amber-500/40 text-amber-700"
               }`}
             >
               {order.order_status === "ready" ? (
-                <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-6 h-6 text-emerald-700 shrink-0" />
               ) : order.order_status === "preparing" ? (
-                <Flame className="w-6 h-6 text-teal-400 shrink-0 animate-bounce" />
+                <Flame className="w-6 h-6 text-accent shrink-0 animate-bounce" />
+              ) : order.order_status === "completed" ? (
+                <CheckCircle2 className="w-6 h-6 text-secondary shrink-0" />
               ) : (
-                <Clock className="w-6 h-6 text-amber-400 shrink-0 animate-pulse" />
+                <Clock className="w-6 h-6 text-amber-700 shrink-0 animate-pulse" />
               )}
               <div>
-                <p className="text-xs uppercase font-extrabold tracking-wider">
+                <p className="text-xs uppercase font-semibold tracking-wider">
                   Live Cooking Status
                 </p>
-                <p className="text-base font-black">
+                <p className="text-base font-bold">
                   {order.order_status === "ready"
                     ? "Your order is ready! Please pick up at the counter."
                     : order.order_status === "preparing"
                     ? "Kitchen is cooking your meal now..."
+                    : order.order_status === "completed"
+                    ? "Order completed. Thank you!"
+                    : order.order_status === "cancelled"
+                    ? "This order was cancelled."
                     : "Order received by kitchen (Pending)"}
                 </p>
               </div>
@@ -111,8 +122,8 @@ export default function PublicReceiptPage() {
         )}
       </main>
 
-      <footer className="text-center text-xs text-slate-500 py-6">
-        Digital Niaga • Digital E-Receipt Verification
+      <footer className="text-center text-xs text-muted py-6">
+        Digital Niaga • Demo Digital Receipt
       </footer>
     </div>
   );

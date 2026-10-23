@@ -2,9 +2,9 @@ import { Stall } from "@/types";
 
 export const HAWKER_CENTRE_INFO = {
   name: "1 Utama Food District",
-  location: "Lower Ground Floor (Highstreet), 1 Utama Shopping Centre, Petaling Jaya",
+  location: "S346-S347, 2F Rainforest, 1 Utama Shopping Centre, Petaling Jaya",
   description: "A vibrant multi-cuisine culinary destination bringing authentic Malaysian street food and modern hawker favorites under one roof.",
-  operatingHours: "10:00 AM - 10:00 PM Daily",
+  operatingHours: "10:00 AM - 10:00 PM (Sun–Thu); 10:00 AM - 10:30 PM (Fri–Sat)",
   totalStalls: 8,
 };
 
@@ -27,10 +27,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: false,
     rating: 4.8,
     coord_3d: {
-      x: -6,
-      y: 0.5,
-      z: -5,
-      rotationY: 0,
+      x: -11,
+      y: 0,
+      z: 8.4,
+      rotationY: Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#f59e0b", // Amber
@@ -102,10 +102,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: false,
     rating: 4.9,
     coord_3d: {
-      x: -2,
-      y: 0.5,
-      z: -5,
-      rotationY: 0,
+      x: -11,
+      y: 0,
+      z: 5.5,
+      rotationY: Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#ef4444", // Red
@@ -166,10 +166,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: true,
     rating: 4.9,
     coord_3d: {
-      x: 2,
-      y: 0.5,
-      z: -5,
-      rotationY: 0,
+      x: -11,
+      y: 0,
+      z: 2.6,
+      rotationY: Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#10b981", // Emerald
@@ -241,9 +241,9 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: false,
     rating: 4.7,
     coord_3d: {
-      x: 6,
-      y: 0.5,
-      z: -5,
+      x: -6,
+      y: 0,
+      z: -9,
       rotationY: 0,
       boothWidth: 2.2,
       boothDepth: 2,
@@ -294,10 +294,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: true,
     rating: 4.8,
     coord_3d: {
-      x: 6,
-      y: 0.5,
-      z: 5,
-      rotationY: Math.PI,
+      x: 3.8,
+      y: 0,
+      z: -9,
+      rotationY: 0,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#06b6d4", // Cyan
@@ -358,10 +358,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: true,
     rating: 4.8,
     coord_3d: {
-      x: 2,
-      y: 0.5,
-      z: 5,
-      rotationY: Math.PI,
+      x: 10.8,
+      y: 0,
+      z: 3.8,
+      rotationY: -Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#ec4899", // Pink
@@ -411,10 +411,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: true,
     rating: 4.6,
     coord_3d: {
-      x: -2,
-      y: 0.5,
-      z: 5,
-      rotationY: Math.PI,
+      x: 10.8,
+      y: 0,
+      z: 6.7,
+      rotationY: -Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#22c55e", // Green
@@ -464,10 +464,10 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     is_halal: true,
     rating: 4.9,
     coord_3d: {
-      x: -6,
-      y: 0.5,
-      z: 5,
-      rotationY: Math.PI,
+      x: 10.8,
+      y: 0,
+      z: 9.5,
+      rotationY: -Math.PI / 2,
       boothWidth: 2.2,
       boothDepth: 2,
       color: "#eab308", // Yellow

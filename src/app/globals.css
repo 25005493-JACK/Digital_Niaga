@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #090d16;
-  --foreground: #f8fafc;
+  --background: #f7f8f6;
+  --foreground: #17252b;
 }
 
 body {
@@ -21,14 +21,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b1120;
+  background: #f1f4f2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #c8d5d0;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #9fb3ab;
 }
 
 /* 3D Canvas Touch optimization */
@@ -36,23 +36,30 @@ body {
   touch-action: none;
 }
 
-/* Glassmorphism utility */
+/* Calm floating surfaces */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #dce5e1;
 }
 
 .glass-panel-subtle {
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dce5e1;
+}
+
+.hero-dots {
+  background-image: radial-gradient(#d6e3dd 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+  mask-image: linear-gradient(to bottom, black, transparent);
 }
 
 /* Print styles for digital receipts */
 @media print {
+  body * {
+    visibility: hidden !important;
+  }
   body {
     background: white !important;
     color: black !important;
@@ -64,9 +71,25 @@ body {
     display: block !important;
   }
   .receipt-box {
+    visibility: visible !important;
+    position: fixed !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    background: white !important;
+    color: black !important;
     border: none !important;
     box-shadow: none !important;
     max-width: 100% !important;
     padding: 0 !important;
+  }
+  .receipt-box * {
+    visibility: visible !important;
+    color: black !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .receipt-box .no-print,
+  .receipt-box .no-print * {
+    display: none !important;
   }
 }

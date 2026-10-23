@@ -89,15 +89,38 @@ ALTER TABLE public.hawker_centres ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.stalls ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.menu_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.stall_members ENABLE ROW LEVEL SECURITY;
 
 -- Public can read hawker centres, stalls, and menu items
 CREATE POLICY "Allow public read access to hawker centres" ON public.hawker_centres FOR SELECT USING (true);
 CREATE POLICY "Allow public read access to stalls" ON public.stalls FOR SELECT USING (true);
 CREATE POLICY "Allow public read access to menu items" ON public.menu_items FOR SELECT USING (true);
 
--- Orders: Public can view their receipt by order id
-CREATE POLICY "Allow public read order by id" ON public.orders FOR SELECT USING (true);
+-- Staff can see only their own membership records.
+CREATE POLICY "Read own stall membership" ON public.stall_members
+FOR SELECT TO authenticated USING (user_id = auth.uid());
 
--- Orders: Allow insert and update
-CREATE POLICY "Allow insert orders" ON public.orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow update orders" ON public.orders FOR UPDATE USING (true);
+-- Order access requires an authenticated member of the matching stall.
+-- The frontend prototype does not yet provide sign-in, so this policy intentionally
+-- denies anonymous order access until authentication and stall IDs are wired up.
+CREATE POLICY "Read own stall orders" ON public.orders
+FOR SELECT TO authenticated USING (
+  EXISTS (SELECT 1 FROM public.stall_members member
+          WHERE member.stall_id::text = orders.stall_id AND member.user_id = auth.uid())
+);
+CREATE POLICY "Create own stall orders" ON public.orders
+FOR INSERT TO authenticated WITH CHECK (
+  EXISTS (SELECT 1 FROM public.stall_members member
+          WHERE member.stall_id::text = orders.stall_id AND member.user_id = auth.uid()
+            AND member.role IN ('owner', 'cashier'))
+);
+CREATE POLICY "Update own stall orders" ON public.orders
+FOR UPDATE TO authenticated USING (
+  EXISTS (SELECT 1 FROM public.stall_members member
+          WHERE member.stall_id::text = orders.stall_id AND member.user_id = auth.uid()
+            AND member.role IN ('owner', 'kitchen'))
+) WITH CHECK (
+  EXISTS (SELECT 1 FROM public.stall_members member
+          WHERE member.stall_id::text = orders.stall_id AND member.user_id = auth.uid()
+            AND member.role IN ('owner', 'kitchen'))
+);

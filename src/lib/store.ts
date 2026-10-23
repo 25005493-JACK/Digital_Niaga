@@ -1,7 +1,6 @@
 "use client";
 
-import { Order, OrderStatus, OrderType, PaymentMethod, PaymentStatus } from "@/types";
-import { supabase, isSupabaseConfigured } from "./supabase";
+import { Order, OrderStatus } from "@/types";
 
 const STORAGE_KEY = "digital_niaga_orders_v1";
 const BROADCAST_CHANNEL = "digital_niaga_channel";
@@ -107,18 +106,24 @@ export function getStoredOrders(): Order[] {
 }
 
 // Helper to save orders and broadcast changes across tabs/windows
-export function saveOrders(orders: Order[]) {
-  if (typeof window === "undefined") return;
+export function saveOrders(orders: Order[]): boolean {
+  if (typeof window === "undefined") return false;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  } catch (err) {
+    console.error("Failed to save orders:", err);
+    return false;
+  }
+  try {
     if ("BroadcastChannel" in window) {
       const channel = new BroadcastChannel(BROADCAST_CHANNEL);
       channel.postMessage({ type: "SYNC_ORDERS", orders });
       channel.close();
     }
   } catch (err) {
-    console.error("Failed to save orders:", err);
+    console.warn("Order broadcast failed; storage sync remains available:", err);
   }
+  return true;
 }
 
 // Get orders filtered by stall ID (Multi-tenant stall isolation)
@@ -137,23 +142,14 @@ export function getOrderById(orderId: string): Order | undefined {
 export async function createOrder(orderData: Omit<Order, "id" | "created_at" | "updated_at">): Promise<Order> {
   const newOrder: Order = {
     ...orderData,
-    id: `ord-${Date.now()}`,
+    id: `ord-${crypto.randomUUID()}`,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
 
   const current = getStoredOrders();
   const updated = [newOrder, ...current];
-  saveOrders(updated);
-
-  // If Supabase is connected, replicate to Supabase
-  if (isSupabaseConfigured()) {
-    try {
-      await supabase.from("orders").insert([newOrder]);
-    } catch (err) {
-      console.warn("Supabase sync warning:", err);
-    }
-  }
+  if (!saveOrders(updated)) throw new Error("The order could not be saved locally.");
 
   return newOrder;
 }
@@ -170,15 +166,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
     updated_at: new Date().toISOString(),
   };
 
-  saveOrders([...current]);
-
-  if (isSupabaseConfigured()) {
-    try {
-      await supabase.from("orders").update({ order_status: status }).eq("id", orderId);
-    } catch (err) {
-      console.warn("Supabase sync warning:", err);
-    }
-  }
+  if (!saveOrders([...current])) throw new Error("The order status could not be saved locally.");
 
   return current[index];
 }
@@ -215,26 +203,8 @@ export function subscribeToOrders(stallId: string, onUpdate: (orders: Order[]) =
   };
   window.addEventListener("storage", handleStorage);
 
-  // 3. Supabase Realtime subscription when configured
-  let supabaseSubscription: any = null;
-  if (isSupabaseConfigured()) {
-    supabaseSubscription = supabase
-      .channel(`public:orders:${stallId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders", filter: `stall_id=eq.${stallId}` },
-        () => {
-          onUpdate(getOrdersByStall(stallId));
-        }
-      )
-      .subscribe();
-  }
-
   return () => {
     if (channel) channel.close();
     window.removeEventListener("storage", handleStorage);
-    if (supabaseSubscription) {
-      supabase.removeChannel(supabaseSubscription);
-    }
   };
 }

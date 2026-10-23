@@ -1,227 +1,249 @@
 "use client";
 
-import React, { Suspense, useRef } from "react";
+import React, { Suspense, useMemo, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Grid, Float } from "@react-three/drei";
+import { Html, Line, OrbitControls } from "@react-three/drei";
+import { Compass, RotateCcw } from "lucide-react";
 import { Stall } from "@/types";
-import { StallMesh } from "./StallMesh";
+import * as THREE from "three";
 import { CameraController } from "./CameraController";
-import { Compass, RotateCcw, ZoomIn } from "lucide-react";
+import { StallMesh } from "./StallMesh";
 
 interface FoodCourt3DProps {
   stalls: Stall[];
   activeStall: Stall | null;
   onSelectStall: (stall: Stall) => void;
   onResetView: () => void;
+  resetToken: number;
 }
 
-// Low-poly dining table + 4 stools
-function DiningCluster({ position }: { position: [number, number, number] }) {
+function HallLabel({ text, position }: { text: string; position: [number, number, number] }) {
   return (
-    <group position={position}>
-      {/* Tabletop */}
-      <mesh position={[0, 0.72, 0]} receiveShadow>
-        <cylinderGeometry args={[0.9, 0.9, 0.06, 16]} />
-        <meshStandardMaterial color="#334155" roughness={0.5} />
-      </mesh>
-      {/* Table Pole & Base */}
-      <mesh position={[0, 0.35, 0]}>
-        <cylinderGeometry args={[0.06, 0.06, 0.7]} />
-        <meshStandardMaterial color="#64748b" metalness={0.6} />
-      </mesh>
-      <mesh position={[0, 0.02, 0]}>
-        <cylinderGeometry args={[0.4, 0.4, 0.04]} />
-        <meshStandardMaterial color="#475569" />
-      </mesh>
-
-      {/* 4 Stools */}
-      {[-0.8, 0.8].map((dx, i) =>
-        [-0.8, 0.8].map((dz, j) => (
-          <group key={`${i}-${j}`} position={[dx * 0.7, 0, dz * 0.7]}>
-            <mesh position={[0, 0.42, 0]}>
-              <cylinderGeometry args={[0.22, 0.22, 0.05, 12]} />
-              <meshStandardMaterial color="#0f766e" />
-            </mesh>
-            <mesh position={[0, 0.2, 0]}>
-              <cylinderGeometry args={[0.03, 0.03, 0.4]} />
-              <meshStandardMaterial color="#64748b" />
-            </mesh>
-          </group>
-        ))
-      )}
-    </group>
+    <Html position={position} center transform distanceFactor={15}>
+      <span className="pointer-events-none select-none whitespace-nowrap text-[11px] font-bold tracking-[0.16em] text-[#fff4dc] drop-shadow-md">
+        {text}
+      </span>
+    </Html>
   );
 }
 
-// Decorative Indoor Planter (Signature 1 Utama greenery)
-function IndoorPlanter({ position }: { position: [number, number, number] }) {
+function DiningTable({ x, z }: { x: number; z: number }) {
   return (
-    <group position={position}>
-      {/* Planter pot */}
-      <mesh position={[0, 0.4, 0]}>
-        <cylinderGeometry args={[0.45, 0.35, 0.8, 12]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.7} />
+    <group position={[x, 0, z]}>
+      <mesh position={[0, 0.76, 0]} castShadow>
+        <boxGeometry args={[3, 0.08, 0.82]} />
+        <meshStandardMaterial color="#ad754d" roughness={0.7} />
       </mesh>
-      {/* Foliage */}
-      <mesh position={[0, 0.95, 0]}>
-        <sphereGeometry args={[0.55, 8, 8]} />
-        <meshStandardMaterial color="#15803d" roughness={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-export const FoodCourt3D: React.FC<FoodCourt3DProps> = ({
-  stalls,
-  activeStall,
-  onSelectStall,
-  onResetView,
-}) => {
-  const controlsRef = useRef<any>(null);
-
-  return (
-    <div className="relative w-full h-[52dvh] sm:h-[58dvh] lg:h-[620px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-950/80 shadow-2xl canvas-container">
-      {/* On-screen 3D Overlay Header */}
-      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-2 pointer-events-none">
-        <div className="glass-panel px-3 py-1.5 rounded-xl flex items-center gap-2 pointer-events-auto shadow-lg">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
-          </span>
-          <span className="text-xs sm:text-sm font-bold text-slate-200">
-            1 Utama Food District
-          </span>
-          <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 font-semibold border border-teal-500/30">
-            3D Interactive Map
-          </span>
-        </div>
-      </div>
-
-      {/* Camera Quick Controls */}
-      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
-        <button
-          onClick={onResetView}
-          title="Reset View to Overview"
-          className="glass-panel p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all active:scale-95 text-xs flex items-center gap-1.5 font-medium shadow-lg"
-        >
-          <RotateCcw className="w-3.5 h-3.5 text-teal-400" />
-          <span className="hidden sm:inline">Overview</span>
-        </button>
-      </div>
-
-      {/* Floating User Hint Bar */}
-      <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-4 z-10 pointer-events-none">
-        <div className="glass-panel px-3 py-1.5 rounded-xl text-[11px] text-slate-400 flex items-center justify-between sm:justify-start gap-3 pointer-events-auto">
-          <span className="flex items-center gap-1">
-            <Compass className="w-3 h-3 text-teal-400" />
-            Drag to rotate • Pinch / Scroll to zoom
-          </span>
-          {activeStall && (
-            <span className="text-teal-300 font-medium truncate max-w-[150px]">
-              Viewing {activeStall.stall_number}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Three.js Canvas */}
-      <Canvas
-        shadows
-        camera={{ position: [0, 13, 16], fov: 46 }}
-        dpr={[1, 2]} // Optimize pixel ratio across mobile and retina PC
-        className="w-full h-full cursor-grab active:cursor-grabbing"
-      >
-        <Suspense fallback={null}>
-          <CameraController activeStall={activeStall} controlsRef={controlsRef} />
-
-          {/* Lighting Rig */}
-          <ambientLight intensity={0.8} />
-          <directionalLight
-            position={[10, 20, 15]}
-            intensity={1.2}
-            castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
-          />
-          <pointLight position={[-8, 6, -6]} intensity={0.4} color="#38bdf8" />
-          <pointLight position={[8, 6, 6]} intensity={0.4} color="#f59e0b" />
-
-          {/* Floor & Walkway Grid */}
-          <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -0.01, 0]}
-            receiveShadow
-            onClick={() => onResetView()}
-          >
-            <planeGeometry args={[26, 22]} />
-            <meshStandardMaterial color="#090e1a" roughness={0.8} />
+      {[-1, 1].map((end) => (
+        <mesh key={end} position={[end * 1.25, 0.38, 0]}>
+          <boxGeometry args={[0.07, 0.75, 0.07]} />
+          <meshStandardMaterial color="#414443" metalness={0.5} />
+        </mesh>
+      ))}
+      {[-1, 1].map((side) => (
+        <group key={side} position={[0, 0, side * 0.8]}>
+          <mesh position={[0, 0.52, 0]} castShadow>
+            <boxGeometry args={[2.9, 0.08, 0.38]} />
+            <meshStandardMaterial color="#cc9b70" roughness={0.7} />
           </mesh>
+          {[-1, 1].map((end) => (
+            <mesh key={end} position={[end * 1.2, 0.26, 0]}>
+              <boxGeometry args={[0.06, 0.52, 0.06]} />
+              <meshStandardMaterial color="#414443" />
+            </mesh>
+          ))}
+        </group>
+      ))}
+    </group>
+  );
+}
 
-          {/* Stylized Modern Floor Grid Lines */}
-          <Grid
-            position={[0, 0, 0]}
-            args={[26, 22]}
-            cellSize={1}
-            cellThickness={0.6}
-            cellColor="#1e293b"
-            sectionSize={3}
-            sectionThickness={1.2}
-            sectionColor="#334155"
-            fadeDistance={25}
-          />
+function Planter({ x, z }: { x: number; z: number }) {
+  return (
+    <group position={[x, 0, z]}>
+      <mesh position={[0, 0.34, 0]} castShadow>
+        <cylinderGeometry args={[0.43, 0.34, 0.68, 10]} />
+        <meshStandardMaterial color="#d3cbbb" />
+      </mesh>
+      <mesh position={[0, 1.03, 0]} castShadow>
+        <icosahedronGeometry args={[0.65, 1]} />
+        <meshStandardMaterial color="#54846b" roughness={1} />
+      </mesh>
+      <mesh position={[-0.3, 0.87, 0.12]}>
+        <icosahedronGeometry args={[0.35, 1]} />
+        <meshStandardMaterial color="#37684f" roughness={1} />
+      </mesh>
+    </group>
+  );
+}
 
-          {/* Entrance Arch Marker */}
-          <group position={[0, 0, 9.5]}>
+// The outline follows the mall-map crop supplied by the user. Coordinates are
+// scaled to the scene; the crop does not show individual counter boundaries.
+const hallOutline: [number, number][] = [
+  [-8.6, -11], [5.5, -11], [5.5, 0.5], [9.3, 2.3],
+  [13, 2.3], [13, 10.3], [11.4, 10.7], [8.7, 10.7],
+  [7.1, 10.1], [5.8, 10], [4.6, 10.4], [3.2, 10.5],
+  [1.8, 10.2], [0.3, 9.5], [-1.5, 9.3], [-3.2, 10.2],
+  [-4.9, 10.7], [-7.3, 10.7], [-10.2, 10.1], [-13, 10.1],
+  [-13, 2.2], [-10.8, 2.2], [-8.6, -0.3],
+];
+
+function FoodDistrictHall() {
+  const footprint = useMemo(
+    () => new THREE.Shape(hallOutline.map(([x, z]) => new THREE.Vector2(x, -z))),
+    []
+  );
+
+  return (
+    <group>
+      <mesh position={[0, -0.045, 2]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[32, 37]} />
+        <meshStandardMaterial color="#e4e4de" roughness={1} />
+      </mesh>
+      <mesh position={[0, -0.025, 14.6]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[30, 7]} />
+        <meshStandardMaterial color="#628b64" roughness={1} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <shapeGeometry args={[footprint]} />
+        <meshStandardMaterial color="#e8e3d9" roughness={0.95} />
+      </mesh>
+      <Line
+        points={[...hallOutline, hallOutline[0]].map(([x, z]) => [x, 0.035, z])}
+        color="#a8a092"
+        lineWidth={1.2}
+      />
+      <mesh position={[0, 0.012, -1]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[3.4, 19]} />
+        <meshStandardMaterial color="#cec9bd" roughness={0.95} />
+      </mesh>
+      {Array.from({ length: 11 }, (_, i) => (
+        <mesh key={i} position={[0, 0.018, -10 + i * 1.8]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[13, 0.018]} />
+          <meshBasicMaterial color="#d3ccbf" />
+        </mesh>
+      ))}
+
+      {/* Mall-side entrance sits in the narrow northern section. */}
+      <group position={[0, 0, -11.05]}>
+        {[-3.1, 3.1].map((x) => (
+          <mesh key={x} position={[x, 1.9, 0]}>
+            <boxGeometry args={[0.22, 3.8, 0.3]} />
+            <meshStandardMaterial color="#363a39" metalness={0.4} />
+          </mesh>
+        ))}
+        <mesh position={[0, 3.76, 0]}>
+          <boxGeometry args={[6.4, 0.27, 0.4]} />
+          <meshStandardMaterial color="#363a39" />
+        </mesh>
+        <mesh position={[0, 3.34, 0]}>
+          <boxGeometry args={[5.8, 0.62, 0.2]} />
+          <meshStandardMaterial color="#242827" />
+        </mesh>
+        <HallLabel text="FOOD DISTRICT" position={[0, 3.35, 0.18]} />
+      </group>
+
+      {/* The map places the Forest against this broad southern edge. */}
+      {[-7.2, -3.7, 0, 3.7, 7.2].map((x, i) => {
+        const z = Math.abs(x) < 1 ? 9.2 : 10.15;
+        const color = ["#c74e3e", "#cf823e", "#648564"][i % 3];
+        return (
+          <group key={x} position={[x, 0, z]}>
             <mesh position={[0, 1.8, 0]}>
-              <boxGeometry args={[5, 0.4, 0.2]} />
-              <meshStandardMaterial
-                color="#0f766e"
-                emissive="#0f766e"
-                emissiveIntensity={0.3}
-              />
+              <boxGeometry args={[3.2, 3.6, 0.06]} />
+              <meshStandardMaterial color="#c8ded4" transparent opacity={0.12} metalness={0.2} depthWrite={false} />
             </mesh>
-            <mesh position={[-2.3, 0.9, 0]}>
-              <cylinderGeometry args={[0.08, 0.08, 1.8]} />
-              <meshStandardMaterial color="#64748b" />
+            <mesh position={[-1.6, 1.8, 0]}>
+              <boxGeometry args={[0.08, 3.6, 0.08]} />
+              <meshStandardMaterial color="#424b48" />
             </mesh>
-            <mesh position={[2.3, 0.9, 0]}>
-              <cylinderGeometry args={[0.08, 0.08, 1.8]} />
-              <meshStandardMaterial color="#64748b" />
+            <mesh position={[0, 2.72, 0.05]}>
+              <boxGeometry args={[3, 1.05, 0.07]} />
+              <meshStandardMaterial color={color} transparent opacity={0.82} />
             </mesh>
           </group>
+        );
+      })}
+      {[-11, -7, -3, 2, 6, 11].map((x, i) => (
+        <mesh key={x} position={[x, 0.35, 13.3 + (i % 2) * 1.5]}>
+          <icosahedronGeometry args={[1.5, 1]} />
+          <meshStandardMaterial color={i % 2 ? "#417447" : "#356d47"} roughness={1} />
+        </mesh>
+      ))}
+      <Html position={[0, 0.4, 14]} center transform distanceFactor={18}>
+        <span className="pointer-events-none select-none whitespace-nowrap rounded-full bg-[#e9f3e8]/90 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-[#315b3b]">
+          1 UTAMA RAINFOREST
+        </span>
+      </Html>
 
-          {/* Central Dining Seating Clusters */}
-          <DiningCluster position={[-3, 0, -0.5]} />
-          <DiningCluster position={[3, 0, -0.5]} />
-          <DiningCluster position={[-3, 0, 2.2]} />
-          <DiningCluster position={[3, 0, 2.2]} />
+      {/* Industrial orange pipework and circular ceiling fixtures. */}
+      {[-7, -2, 3, 8].map((z, i) => (
+        <group key={z} position={[0, 3.9, z]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.2, 0.09, 8, 32]} />
+            <meshStandardMaterial color={i % 2 ? "#be593d" : "#424543"} metalness={0.4} />
+          </mesh>
+          <mesh position={[0, -0.15, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.84, 0.025, 6, 32]} />
+            <meshStandardMaterial color="#e3bc78" emissive="#ce9452" emissiveIntensity={0.5} />
+          </mesh>
+          {i === 1 && <HallLabel text="DINE IN" position={[0, -0.19, 0.1]} />}
+        </group>
+      ))}
+      {[-7.7, 4.6].map((x) => (
+        <mesh key={x} position={[x, 4, 0]}>
+          <boxGeometry args={[0.09, 0.09, 18]} />
+          <meshStandardMaterial color="#b8543b" metalness={0.3} />
+        </mesh>
+      ))}
 
-          {/* Indoor Planters */}
-          <IndoorPlanter position={[0, 0, 0.8]} />
-          <IndoorPlanter position={[-8.5, 0, 0]} />
-          <IndoorPlanter position={[8.5, 0, 0]} />
+      {[-5.3, -2.5, 0.5, 3.5, 6.4].map((z) => (
+        <React.Fragment key={z}>
+          <DiningTable x={-4.1} z={z} />
+          <DiningTable x={4.1} z={z} />
+        </React.Fragment>
+      ))}
+      <Planter x={-7.4} z={-1} />
+      <Planter x={-7.4} z={4.3} />
+      <Planter x={7.2} z={4.3} />
+      <Planter x={7.2} z={8.1} />
+    </group>
+  );
+}
 
-          {/* Render Stalls */}
+export const FoodCourt3D: React.FC<FoodCourt3DProps> = ({ stalls, activeStall, onSelectStall, onResetView, resetToken }) => {
+  const controlsRef = useRef<any>(null);
+  const animatingRef = useRef(false);
+  return (
+    <div className="relative h-[46dvh] min-h-[350px] w-full overflow-hidden rounded-2xl border border-line bg-[#e8e5dc] sm:h-[52dvh] lg:h-[500px] canvas-container">
+      <div className="pointer-events-none absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
+        <div className="glass-panel flex items-center gap-2 rounded-lg px-3 py-1.5 shadow-sm">
+          <span className="h-2 w-2 rounded-full bg-accent" />
+          <span className="text-xs font-semibold text-ink sm:text-sm">Food District · 1 Utama</span>
+          <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase text-accent">3D scene</span>
+        </div>
+      </div>
+      <button onClick={onResetView} title="Reset view to overview" className="glass-panel absolute right-3 top-3 z-10 flex items-center gap-1.5 rounded-lg p-2 text-xs font-medium text-secondary hover:text-accent sm:right-4 sm:top-4">
+        <RotateCcw className="h-3.5 w-3.5 text-accent" />
+        <span className="hidden sm:inline">Overview</span>
+      </button>
+      <div className="pointer-events-none absolute bottom-3 left-3 right-3 z-10 sm:left-auto sm:right-4">
+        <div className="glass-panel flex items-center justify-between gap-3 rounded-lg px-3 py-1.5 text-[11px] text-muted sm:justify-start">
+          <span className="flex items-center gap-1"><Compass className="h-3 w-3 text-accent" /> Drag to rotate · Scroll to zoom</span>
+          {activeStall && <span className="max-w-[150px] truncate font-medium text-accent">Viewing {activeStall.stall_number}</span>}
+        </div>
+      </div>
+      <Canvas shadows camera={{ position: [0, 20, 26], fov: 45 }} dpr={[1, 1.75]} className="h-full w-full cursor-grab active:cursor-grabbing">
+        <Suspense fallback={null}>
+          <CameraController activeStall={activeStall} controlsRef={controlsRef} animatingRef={animatingRef} resetToken={resetToken} />
+          <ambientLight intensity={1.15} />
+          <directionalLight position={[-7, 17, 10]} intensity={1.4} castShadow shadow-mapSize-width={1024} shadow-mapSize-height={1024} />
+          <pointLight position={[6, 6, 0]} intensity={0.65} color="#ffe8bf" />
+          <FoodDistrictHall />
           {stalls.map((stall) => (
-            <StallMesh
-              key={stall.id}
-              stall={stall}
-              isSelected={activeStall?.id === stall.id}
-              onSelect={onSelectStall}
-            />
+            <StallMesh key={stall.id} stall={stall} isSelected={activeStall?.id === stall.id} onSelect={onSelectStall} />
           ))}
-
-          {/* Orbit Controls */}
-          <OrbitControls
-            ref={controlsRef}
-            enablePan={true}
-            enableZoom={true}
-            minDistance={4}
-            maxDistance={24}
-            maxPolarAngle={Math.PI / 2.15} // Restrict camera from going under floor
-            minPolarAngle={Math.PI / 8}
-            dampingFactor={0.08}
-          />
+          <OrbitControls ref={controlsRef} onStart={() => { animatingRef.current = false; }} enablePan enableZoom minDistance={5} maxDistance={48} maxPolarAngle={Math.PI / 2.08} minPolarAngle={Math.PI / 8} dampingFactor={0.08} />
         </Suspense>
       </Canvas>
     </div>

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { BrandLogo } from "@/components/shared/BrandLogo";
 import { ONE_UTAMA_STALLS } from "@/data/oneUtamaStalls";
-import { MenuItem, OrderItem, Stall, OrderType, PaymentMethod, Order } from "@/types";
-import { createOrder } from "@/lib/store";
+import { MenuItem, OrderItem, OrderType, PaymentMethod, Order } from "@/types";
+import { createOrder, getOrdersByStall } from "@/lib/store";
 import { formatCurrency, generateDailyOrderNumber } from "@/lib/utils";
 import { QRPaymentModal } from "@/components/ui/QRPaymentModal";
 import { ReceiptCard } from "@/components/ui/ReceiptCard";
@@ -28,6 +29,12 @@ import {
 export default function CashierPOSPage() {
   // Current Stall Selection (Multi-tenant stall isolation)
   const [selectedStallId, setSelectedStallId] = useState<string>("stall-01");
+  useEffect(() => {
+    const requestedStall = new URLSearchParams(window.location.search).get("stall");
+    if (ONE_UTAMA_STALLS.some((stall) => stall.id === requestedStall)) {
+      setSelectedStallId(requestedStall!);
+    }
+  }, []);
   const currentStall = useMemo(
     () => ONE_UTAMA_STALLS.find((s) => s.id === selectedStallId) || ONE_UTAMA_STALLS[0],
     [selectedStallId]
@@ -118,7 +125,9 @@ export default function CashierPOSPage() {
 
   // Finalize Order
   const handleConfirmPayment = async (paymentMethod: PaymentMethod) => {
-    const orderNumber = generateDailyOrderNumber();
+    const orderNumber = generateDailyOrderNumber(
+      getOrdersByStall(currentStall.id).map((order) => order.order_number)
+    );
     const newOrder = await createOrder({
       stall_id: currentStall.id,
       order_number: orderNumber,
@@ -140,34 +149,37 @@ export default function CashierPOSPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col">
       {/* Top Bar */}
-      <header className="glass-panel border-b border-slate-800 px-4 py-2.5 sm:px-6 flex items-center justify-between sticky top-0 z-30">
-        <div className="flex items-center gap-3">
+      <header className="glass-panel border-b border-line px-4 py-2.5 sm:px-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sticky top-0 z-30">
+        <div className="flex items-center gap-3 min-w-0">
           <Link
             href="/"
-            className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+            className="p-1.5 rounded-xl bg-surface-subtle hover:bg-line text-secondary transition-colors"
             title="Back to Landing Page"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <BrandLogo size="sm" />
-          <span className="hidden sm:inline-block h-4 w-px bg-slate-700" />
-          <span className="hidden sm:inline-block text-xs font-bold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-md">
+          <span className="hidden sm:inline-block h-4 w-px bg-line" />
+          <span className="hidden sm:inline-block text-xs font-bold text-amber-700 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-md">
             Cashier POS Mode
           </span>
         </div>
 
         {/* Stall Switcher Dropdown (Multi-stall isolation) */}
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex items-center gap-2 w-full min-w-0 sm:w-auto">
+          <div className="relative flex-1 min-w-0 sm:flex-none">
             <select
+              aria-label="Select stall"
               value={selectedStallId}
               onChange={(e) => {
                 setSelectedStallId(e.target.value);
                 setCart([]);
+                setTableNumber("");
+                setActiveCategory("All Items");
               }}
-              className="appearance-none bg-slate-900 border border-slate-700 text-teal-300 text-xs sm:text-sm font-bold py-1.5 pl-3 pr-8 rounded-xl outline-none focus:border-teal-400 cursor-pointer shadow-md"
+              className="appearance-none w-full bg-surface border border-line text-accent text-xs sm:text-sm font-semibold py-1.5 pl-3 pr-8 rounded-lg outline-none focus:border-accent cursor-pointer sm:max-w-[360px]"
             >
               {ONE_UTAMA_STALLS.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -175,14 +187,14 @@ export default function CashierPOSPage() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-teal-400 absolute right-2.5 top-2.5 pointer-events-none" />
+            <ChevronDown className="w-4 h-4 text-accent absolute right-2.5 top-2.5 pointer-events-none" />
           </div>
 
           <Link
-            href="/kitchen"
-            className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
+            href={`/kitchen?stall=${currentStall.id}`}
+            className="shrink-0 px-3 py-1.5 rounded-lg border border-line bg-surface text-secondary hover:text-accent text-xs font-semibold flex items-center gap-1.5 transition-colors"
           >
-            <ChefHat className="w-4 h-4 text-rose-400" />
+            <ChefHat className="w-4 h-4 text-rose-700" />
             <span className="hidden md:inline">Switch to Kitchen KDS</span>
           </Link>
         </div>
@@ -200,8 +212,8 @@ export default function CashierPOSPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
                   activeCategory === cat
-                    ? "bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20"
-                    : "bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800"
+                    ? "bg-accent text-white"
+                    : "bg-surface text-muted hover:text-ink border border-line"
                 }`}
               >
                 {cat}
@@ -215,34 +227,37 @@ export default function CashierPOSPage() {
               <button
                 key={item.id}
                 onClick={() => addToCart(item)}
-                className="group relative p-3 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-teal-500/60 transition-all text-left flex flex-col justify-between active:scale-95 shadow-md"
+                disabled={!item.is_available}
+                className="group relative p-3 rounded-2xl bg-surface border border-line hover:border-accent/50 transition-all text-left flex flex-col justify-between active:scale-95 shadow-md"
               >
                 <div>
-                  <div className="h-28 sm:h-32 rounded-xl overflow-hidden mb-2 bg-slate-800 relative">
-                    <img
+                  <div className="h-28 sm:h-32 rounded-xl overflow-hidden mb-2 bg-surface-subtle relative">
+                    <Image
                       src={item.image_url}
                       alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     {item.is_signature && (
-                      <span className="absolute top-1.5 left-1.5 bg-amber-500/90 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded shadow">
+                      <span className="absolute top-1.5 left-1.5 bg-amber-500/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow">
                         SIGNATURE
                       </span>
                     )}
                   </div>
-                  <h4 className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-teal-300 transition-colors line-clamp-1">
+                  <h4 className="text-xs sm:text-sm font-bold text-ink group-hover:text-accent transition-colors line-clamp-1">
                     {item.name}
                   </h4>
-                  <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                  <p className="text-[11px] text-muted line-clamp-1 mt-0.5">
                     {item.description}
                   </p>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-800">
-                  <span className="text-sm font-black text-teal-400">
+                <div className="mt-3 flex items-center justify-between pt-2 border-t border-line">
+                  <span className="text-sm font-bold text-accent">
                     {formatCurrency(item.price)}
                   </span>
-                  <div className="p-1 rounded-lg bg-teal-500/10 text-teal-300 group-hover:bg-teal-500 group-hover:text-slate-950 transition-colors">
+                  <div className="p-1 rounded-lg bg-accent-soft text-accent group-hover:bg-accent group-hover:text-white transition-colors">
                     <Plus className="w-3.5 h-3.5" />
                   </div>
                 </div>
@@ -252,18 +267,18 @@ export default function CashierPOSPage() {
         </section>
 
         {/* Right: Active Order Chit (Sidebar on PC, Bottom sheet on Mobile) */}
-        <aside className="w-full lg:w-[380px] xl:w-[420px] bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col justify-between p-4 sm:p-5 shrink-0 shadow-2xl">
+        <aside className="w-full lg:w-[380px] xl:w-[420px] bg-surface border-t lg:border-t-0 lg:border-l border-line flex flex-col justify-between p-4 sm:p-5 shrink-0 shadow-sm">
           <div className="space-y-4">
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-3 border-b border-line">
               <div className="flex items-center gap-2">
-                <UtensilsCrossed className="w-4 h-4 text-teal-400" />
-                <h3 className="font-bold text-sm sm:text-base text-white">Current Order Ticket</h3>
+                <UtensilsCrossed className="w-4 h-4 text-accent" />
+                <h3 className="font-bold text-sm sm:text-base text-ink">Current Order Ticket</h3>
               </div>
               {cart.length > 0 && (
                 <button
                   onClick={clearCart}
-                  className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1"
+                  className="text-xs text-rose-700 hover:text-rose-700 flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" /> Clear
                 </button>
@@ -271,35 +286,35 @@ export default function CashierPOSPage() {
             </div>
 
             {/* Order Type Toggle (Dine-in vs Takeaway) */}
-            <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-2 gap-2 p-1 bg-surface-subtle rounded-xl border border-line">
               <button
                 type="button"
                 onClick={() => setOrderType("dine_in")}
                 className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
                   orderType === "dine_in"
-                    ? "bg-teal-500 text-slate-950 shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-accent text-white shadow"
+                    : "text-muted hover:text-ink"
                 }`}
               >
-                🍽️ Dine-in
+                Dine-in
               </button>
               <button
                 type="button"
                 onClick={() => setOrderType("takeaway")}
                 className={`py-1.5 text-xs font-bold rounded-lg transition-all ${
                   orderType === "takeaway"
-                    ? "bg-teal-500 text-slate-950 shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-accent text-white shadow"
+                    : "text-muted hover:text-ink"
                 }`}
               >
-                🥡 Takeaway / Bungkus
+                Takeaway
               </button>
             </div>
 
             {/* Table Number Input if Dine-in */}
             {orderType === "dine_in" && (
-              <div className="flex items-center gap-2 bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-                <span className="text-xs font-semibold text-slate-400 shrink-0">
+              <div className="flex items-center gap-2 bg-surface-subtle px-3 py-2 rounded-xl border border-line">
+                <span className="text-xs font-semibold text-muted shrink-0">
                   Table No:
                 </span>
                 <input
@@ -307,7 +322,7 @@ export default function CashierPOSPage() {
                   placeholder="e.g. T-04 or Table 12"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
-                  className="bg-transparent text-xs sm:text-sm font-bold text-teal-300 outline-none w-full"
+                  className="bg-transparent text-xs sm:text-sm font-bold text-accent outline-none w-full"
                 />
               </div>
             )}
@@ -315,20 +330,20 @@ export default function CashierPOSPage() {
             {/* Cart Items List */}
             <div className="max-h-[30vh] lg:max-h-[42vh] overflow-y-auto space-y-2 pr-1">
               {cart.length === 0 ? (
-                <div className="py-12 text-center text-slate-500 text-xs sm:text-sm">
+                <div className="py-12 text-center text-muted text-xs sm:text-sm">
                   Cart is empty. Tap items on the menu pad to add to this chit.
                 </div>
               ) : (
                 cart.map((item) => (
                   <div
                     key={item.id}
-                    className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex items-center justify-between gap-3 text-xs"
+                    className="p-2.5 rounded-xl bg-surface-subtle border border-line flex items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-200 truncate">{item.name}</p>
-                      <p className="text-teal-400 font-mono">{formatCurrency(item.price)}</p>
+                      <p className="font-semibold text-ink truncate">{item.name}</p>
+                      <p className="text-accent font-mono">{formatCurrency(item.price)}</p>
                       {item.notes ? (
-                        <p className="text-[11px] text-amber-300 truncate mt-0.5">
+                        <p className="text-[11px] text-amber-700 truncate mt-0.5">
                           Note: {item.notes}
                         </p>
                       ) : null}
@@ -344,26 +359,26 @@ export default function CashierPOSPage() {
                         title="Add cooking note"
                         className={`p-1.5 rounded-lg border transition-colors ${
                           item.notes
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                            : "bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200"
+                            ? "bg-amber-500/20 text-amber-700 border-amber-500/40"
+                            : "bg-surface-subtle text-muted border-line hover:text-ink"
                         }`}
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
                       </button>
 
-                      <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700">
+                      <div className="flex items-center bg-surface-subtle rounded-lg border border-line">
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
-                          className="p-1 hover:text-rose-400 transition-colors"
+                          className="p-1 hover:text-rose-700 transition-colors"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
-                        <span className="px-2 font-mono font-bold text-slate-200">
+                        <span className="px-2 font-mono font-bold text-ink">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
-                          className="p-1 hover:text-teal-400 transition-colors"
+                          className="p-1 hover:text-accent transition-colors"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -371,7 +386,7 @@ export default function CashierPOSPage() {
 
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="p-1 text-slate-500 hover:text-rose-400 transition-colors"
+                        className="p-1 text-muted hover:text-rose-700 transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -383,10 +398,10 @@ export default function CashierPOSPage() {
           </div>
 
           {/* Bottom Summary & Checkout Button */}
-          <div className="pt-4 border-t border-slate-800 space-y-3">
+          <div className="pt-4 border-t border-line space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">Subtotal ({cart.length} items)</span>
-              <span className="text-xl font-black text-white font-mono">
+              <span className="text-xs text-muted font-medium">Subtotal ({cart.length} items)</span>
+              <span className="text-xl font-bold text-ink font-mono">
                 {formatCurrency(totalAmount)}
               </span>
             </div>
@@ -394,7 +409,7 @@ export default function CashierPOSPage() {
             <button
               onClick={() => setIsPaymentModalOpen(true)}
               disabled={cart.length === 0}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-300 hover:to-cyan-300 text-slate-950 font-black text-sm tracking-wide shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 px-4 rounded-xl bg-accent hover:bg-accent-hover text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <CreditCard className="w-4 h-4" />
               <span>Collect Payment & Verify ({formatCurrency(totalAmount)})</span>
@@ -405,10 +420,10 @@ export default function CashierPOSPage() {
 
       {/* Cooking Note Modal */}
       {isNoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5 max-w-sm w-full space-y-3">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <MessageSquare className="w-4 h-4 text-amber-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/45 backdrop-blur-sm">
+          <div className="bg-surface border border-line rounded-2xl p-5 max-w-sm w-full space-y-3">
+            <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-amber-700" />
               Kitchen Cooking Note
             </h4>
             <input
@@ -416,18 +431,18 @@ export default function CashierPOSPage() {
               placeholder="e.g. Less spicy, No onions, Extra gravy"
               value={noteInput}
               onChange={(e) => setNoteInput(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 outline-none focus:border-teal-400"
+              className="w-full bg-surface-subtle border border-line rounded-xl px-3 py-2 text-sm text-ink outline-none focus:border-accent"
             />
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsNoteModalOpen(null)}
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800"
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-muted hover:bg-surface-subtle"
               >
                 Cancel
               </button>
               <button
                 onClick={() => saveNote(isNoteModalOpen)}
-                className="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-950 bg-teal-400 hover:bg-teal-300"
+                className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-accent hover:bg-accent-hover"
               >
                 Save Note
               </button>
@@ -451,11 +466,11 @@ export default function CashierPOSPage() {
 
       {/* Completed Order Digital Receipt Modal */}
       {completedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/45 backdrop-blur-sm">
           <div className="relative w-full max-w-md">
             <button
               onClick={() => setCompletedOrder(null)}
-              className="absolute -top-12 right-0 p-2 rounded-full glass-panel text-slate-300 hover:text-white"
+              className="absolute -top-12 right-0 p-2 rounded-full glass-panel text-secondary hover:text-ink"
             >
               <X className="w-5 h-5" />
             </button>
