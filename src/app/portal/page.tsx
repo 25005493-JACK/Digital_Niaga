@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/shared/BrandLogo";
-import { ONE_UTAMA_STALLS } from "@/data/oneUtamaStalls";
+import { ONE_MAIN_STALLS } from "@/data/oneMainStalls";
 import {
   CreditCard,
   ChefHat,
@@ -20,7 +20,7 @@ import {
 
 export default function PortalPage() {
   const [selectedStallId, setSelectedStallId] = useState<string>("stall-01");
-  const currentStall = ONE_UTAMA_STALLS.find((s) => s.id === selectedStallId) || ONE_UTAMA_STALLS[0];
+  const currentStall = ONE_MAIN_STALLS.find((s) => s.id === selectedStallId) || ONE_MAIN_STALLS[0];
   const supabaseActive = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
@@ -60,7 +60,7 @@ export default function PortalPage() {
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-sm sm:text-base text-ink flex items-center gap-2">
               <Store className="w-4 h-4 text-accent" />
-              Active Stall Selection (1 Utama Food District)
+              Active Stall Selection (1Main Food District)
             </h3>
             <span className="text-xs text-accent font-mono font-bold">
               {currentStall.stall_number}
@@ -68,7 +68,7 @@ export default function PortalPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {ONE_UTAMA_STALLS.map((s) => {
+            {ONE_MAIN_STALLS.map((s) => {
               const isSelected = s.id === selectedStallId;
               return (
                 <button

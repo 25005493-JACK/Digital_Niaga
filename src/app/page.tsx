@@ -6,7 +6,7 @@ import { FoodCourt3D } from "@/components/3d/FoodCourt3D";
 import { SearchInput } from "@/components/aceternity/SearchInput";
 import { BentoGrid } from "@/components/aceternity/BentoGrid";
 import { StallModal } from "@/components/ui/StallModal";
-import { ONE_UTAMA_STALLS, HAWKER_CENTRE_INFO } from "@/data/oneUtamaStalls";
+import { ONE_MAIN_STALLS, HAWKER_CENTRE_INFO } from "@/data/oneMainStalls";
 import { Stall } from "@/types";
 import { MapPin } from "lucide-react";
 
@@ -18,11 +18,11 @@ export default function HomePage() {
 
   // Filter stalls based on category
   const filteredStalls = useMemo(() => {
-    if (selectedCategory === "All") return ONE_UTAMA_STALLS;
+    if (selectedCategory === "All") return ONE_MAIN_STALLS;
     if (selectedCategory === "Halal / Muslim-Friendly") {
-      return ONE_UTAMA_STALLS.filter((s) => s.is_halal);
+      return ONE_MAIN_STALLS.filter((s) => s.is_halal);
     }
-    return ONE_UTAMA_STALLS.filter(
+    return ONE_MAIN_STALLS.filter(
       (s) =>
         s.category === selectedCategory ||
         s.cuisines.some((c) => c.toLowerCase().includes(selectedCategory.toLowerCase()))
@@ -54,7 +54,7 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="relative isolate overflow-visible rounded-[28px] border border-line bg-surface px-5 pb-8 pt-12 text-center sm:px-10 sm:pb-10 sm:pt-16">
           <div className="hero-dots pointer-events-none absolute inset-0 z-0 rounded-[28px] opacity-50" />
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">1 Utama Food District · Petaling Jaya</p>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">1Main Food District</p>
           <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl lg:text-6xl">
             Good food, easy to find.
           </h1>
@@ -63,7 +63,7 @@ export default function HomePage() {
           </p>
           <div className="mx-auto mt-8 w-full max-w-3xl text-left">
             <SearchInput
-              stalls={ONE_UTAMA_STALLS}
+              stalls={ONE_MAIN_STALLS}
               onSelectStall={handleSelectStallFromSearch}
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
@@ -101,18 +101,17 @@ export default function HomePage() {
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Find your way</p>
               <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Explore the 3D map</h2>
             </div>
-            <p className="max-w-md text-sm text-muted">Explore a scene inspired by Food District at 1 Utama. Select a demo booth to open its menu.</p>
+            <p className="max-w-md text-sm text-muted">Explore the 1Main Food District demo scene. Select a booth to open its menu.</p>
           </div>
           <FoodCourt3D
-            stalls={ONE_UTAMA_STALLS}
+            stalls={ONE_MAIN_STALLS}
             activeStall={selectedStall}
             onSelectStall={handleSelectStallIn3D}
             onResetView={handleReset3D}
             resetToken={resetToken}
           />
           <p className="text-xs leading-relaxed text-muted">
-            Hall outline based on the supplied 1 Utama map crop; individual demo booth positions are illustrative. The venue is at {HAWKER_CENTRE_INFO.location}.{" "}
-            <a className="text-accent underline underline-offset-2" href="https://www.1utama.com.my/mall-shop/food-district-s346-s347/" target="_blank" rel="noreferrer">View the official venue listing</a>.
+            The hall outline and booth positions are illustrative for the 1Main Food District demo.
           </p>
         </section>
 
@@ -157,7 +156,7 @@ export default function HomePage() {
           Empowering Malaysian Hawkers with Spatial Discovery & Realtime Order Management.
         </p>
         <p className="text-[11px] text-muted">
-          Demo Location: 1 Utama Food District, Petaling Jaya, Selangor.
+          Demo Location: 1Main Food District.
         </p>
       </footer>
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ONE_UTAMA_STALLS } from "@/data/oneUtamaStalls";
+import { ONE_MAIN_STALLS } from "@/data/oneMainStalls";
 import { Order, Stall } from "@/types";
 import { getStoredOrders, subscribeToOrders } from "@/lib/store";
 import { ReceiptCard } from "@/components/ui/ReceiptCard";
@@ -41,7 +41,7 @@ export default function PublicReceiptPage() {
   }, [orderId]);
 
   const stall: Stall | undefined = order
-    ? ONE_UTAMA_STALLS.find((s) => s.id === order.stall_id) || ONE_UTAMA_STALLS[0]
+    ? ONE_MAIN_STALLS.find((s) => s.id === order.stall_id) || ONE_MAIN_STALLS[0]
     : undefined;
 
   return (
@@ -51,7 +51,7 @@ export default function PublicReceiptPage() {
           href="/"
           className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to 1 Utama Food District
+          <ArrowLeft className="w-4 h-4" /> Back to 1Main Food District
         </Link>
         <BrandLogo size="sm" />
       </header>

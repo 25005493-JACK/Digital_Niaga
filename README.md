@@ -1,4 +1,4 @@
-# Digital Niaga (1 Utama Food District Demo)
+# Digital Niaga (1Main Food District Demo)
 *A Modern Hawker Digitalization Platform — Universiti Malaya SULAM Initiative (WIX2001)*
 
 ---
@@ -72,7 +72,7 @@ For the optional Chrome interaction test, start the built app with `npm run star
 
 ## 📱 Page & Feature Directory
 
-- **`/`**: Public Discovery Landing Page with interactive 3D map of 1 Utama Food District, autocomplete search bar, and Bento stall grid.
+- **`/`**: Public Discovery Landing Page with interactive 3D map of 1Main Food District, autocomplete search bar, and Bento stall grid.
 - **`/pos`**: Cashier Point of Sale terminal with simulated QR payment, cash collection, and digital receipts.
 - **`/kitchen`**: Kitchen Display System with live tickets and audio alert chimes.
 - **`/portal`**: Hawker Owner & Staff Hub for switching stalls (#01 to #08) and operational roles.

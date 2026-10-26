@@ -1,17 +1,17 @@
 import { Stall } from "@/types";
 
 export const HAWKER_CENTRE_INFO = {
-  name: "1 Utama Food District",
-  location: "S346-S347, 2F Rainforest, 1 Utama Shopping Centre, Petaling Jaya",
+  name: "1Main Food District",
+  location: "1Main Food District",
   description: "A vibrant multi-cuisine culinary destination bringing authentic Malaysian street food and modern hawker favorites under one roof.",
   operatingHours: "10:00 AM - 10:00 PM (Sun–Thu); 10:00 AM - 10:30 PM (Fri–Sat)",
   totalStalls: 8,
 };
 
-export const ONE_UTAMA_STALLS: Stall[] = [
+export const ONE_MAIN_STALLS: Stall[] = [
   {
     id: "stall-01",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #01",
     name: "Ah Kow Hainanese Chicken Rice",
     slug: "ah-kow-hainanese-chicken-rice",
@@ -23,7 +23,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 9:30 PM",
     logo_url: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-AhKowChickenRice-Booth01-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-AhKowChickenRice-Booth01-OneMain",
     is_halal: false,
     rating: 4.8,
     coord_3d: {
@@ -86,7 +86,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-02",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #02",
     name: "Penang Wok Char Kuey Teow",
     slug: "penang-wok-char-kuey-teow",
@@ -98,7 +98,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:30 AM - 9:30 PM",
     logo_url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-PenangWokCKT-Booth02-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-PenangWokCKT-Booth02-OneMain",
     is_halal: false,
     rating: 4.9,
     coord_3d: {
@@ -150,7 +150,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-03",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #03",
     name: "Kak Siti Nasi Lemak Kukus",
     slug: "kak-siti-nasi-lemak-kukus",
@@ -162,7 +162,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 10:00 PM",
     logo_url: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-KakSitiNasiLemak-Booth03-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-KakSitiNasiLemak-Booth03-OneMain",
     is_halal: true,
     rating: 4.9,
     coord_3d: {
@@ -225,7 +225,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-04",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #04",
     name: "Uncle Lim Charcoal Claypot Rice",
     slug: "uncle-lim-charcoal-claypot-rice",
@@ -237,7 +237,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "11:00 AM - 9:30 PM",
     logo_url: "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-UncleLimClaypot-Booth04-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-UncleLimClaypot-Booth04-OneMain",
     is_halal: false,
     rating: 4.7,
     coord_3d: {
@@ -278,7 +278,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-05",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #05",
     name: "Bangsar Corner Roti & Banana Leaf",
     slug: "bangsar-corner-roti-canai",
@@ -290,7 +290,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 10:00 PM",
     logo_url: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-BangsarCornerRoti-Booth05-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-BangsarCornerRoti-Booth05-OneMain",
     is_halal: true,
     rating: 4.8,
     coord_3d: {
@@ -342,7 +342,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-06",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #06",
     name: "Warisan Nyonya Laksa & Chendol",
     slug: "warisan-nyonya-laksa-chendol",
@@ -354,7 +354,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 9:30 PM",
     logo_url: "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1548943487-a2e4e43b4853?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-WarisanNyonya-Booth06-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-WarisanNyonya-Booth06-OneMain",
     is_halal: true,
     rating: 4.8,
     coord_3d: {
@@ -395,7 +395,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-07",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #07",
     name: "Green Leaf Vegetarian Kitchen",
     slug: "green-leaf-vegetarian-kitchen",
@@ -407,7 +407,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 9:00 PM",
     logo_url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-GreenLeafVeg-Booth07-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-GreenLeafVeg-Booth07-OneMain",
     is_halal: true,
     rating: 4.6,
     coord_3d: {
@@ -448,7 +448,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
   },
   {
     id: "stall-08",
-    hawker_centre_id: "1-utama-fd",
+    hawker_centre_id: "1-main-fd",
     stall_number: "Booth #08",
     name: "Kopitiam O & Fresh Juice Bar",
     slug: "kopitiam-o-fresh-juice-bar",
@@ -460,7 +460,7 @@ export const ONE_UTAMA_STALLS: Stall[] = [
     operating_hours: "10:00 AM - 10:00 PM",
     logo_url: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=300&q=80",
     banner_url: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80",
-    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-KopitiamO-Booth08-OneUtama",
+    duitnow_qr_url: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=DuitNow-KopitiamO-Booth08-OneMain",
     is_halal: true,
     rating: 4.9,
     coord_3d: {

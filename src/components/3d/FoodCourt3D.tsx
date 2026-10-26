@@ -172,7 +172,7 @@ function FoodDistrictHall() {
       ))}
       <Html position={[0, 0.4, 14]} center transform distanceFactor={18}>
         <span className="pointer-events-none select-none whitespace-nowrap rounded-full bg-[#e9f3e8]/90 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-[#315b3b]">
-          1 UTAMA RAINFOREST
+          1MAIN FOOD DISTRICT
         </span>
       </Html>
 
@@ -219,7 +219,7 @@ export const FoodCourt3D: React.FC<FoodCourt3DProps> = ({ stalls, activeStall, o
       <div className="pointer-events-none absolute left-3 top-3 z-10 sm:left-4 sm:top-4">
         <div className="glass-panel flex items-center gap-2 rounded-lg px-3 py-1.5 shadow-sm">
           <span className="h-2 w-2 rounded-full bg-accent" />
-          <span className="text-xs font-semibold text-ink sm:text-sm">Food District · 1 Utama</span>
+          <span className="text-xs font-semibold text-ink sm:text-sm">Food District · 1Main</span>
           <span className="rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase text-accent">3D scene</span>
         </div>
       </div>

@@ -45,7 +45,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({ order, stall }) => {
       {/* Receipt Header */}
       <div className="text-center pb-4 border-b border-dashed border-line">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-soft text-accent text-xs font-mono font-bold border border-accent/30 mb-2">
-          {stall.stall_number} • 1 Utama Food District
+          {stall.stall_number} • 1Main Food District
         </div>
         <h2 className="text-xl font-bold text-ink">{stall.name}</h2>
         <p className="text-xs text-muted mt-0.5">{stall.contact_phone}</p>

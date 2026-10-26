@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
 import { BrandLogo } from "@/components/shared/BrandLogo";
-import { ONE_UTAMA_STALLS } from "@/data/oneUtamaStalls";
+import { ONE_MAIN_STALLS } from "@/data/oneMainStalls";
 import { Order, OrderStatus } from "@/types";
 import { getOrdersByStall, subscribeToOrders, updateOrderStatus } from "@/lib/store";
 import { formatCurrency } from "@/lib/utils";
@@ -27,12 +27,12 @@ export default function KitchenKDSPage() {
   const [selectedStallId, setSelectedStallId] = useState<string>("stall-01");
   useEffect(() => {
     const requestedStall = new URLSearchParams(window.location.search).get("stall");
-    if (ONE_UTAMA_STALLS.some((stall) => stall.id === requestedStall)) {
+    if (ONE_MAIN_STALLS.some((stall) => stall.id === requestedStall)) {
       setSelectedStallId(requestedStall!);
     }
   }, []);
   const currentStall = useMemo(
-    () => ONE_UTAMA_STALLS.find((s) => s.id === selectedStallId) || ONE_UTAMA_STALLS[0],
+    () => ONE_MAIN_STALLS.find((s) => s.id === selectedStallId) || ONE_MAIN_STALLS[0],
     [selectedStallId]
   );
 
@@ -153,7 +153,7 @@ export default function KitchenKDSPage() {
               onChange={(e) => setSelectedStallId(e.target.value)}
               className="appearance-none w-full bg-surface border border-line text-accent text-xs sm:text-sm font-semibold py-1.5 pl-3 pr-8 rounded-lg outline-none focus:border-accent cursor-pointer sm:max-w-[360px]"
             >
-              {ONE_UTAMA_STALLS.map((s) => (
+              {ONE_MAIN_STALLS.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.stall_number}: {s.name}
                 </option>

@@ -38,7 +38,7 @@ export interface Stall {
   duitnow_qr_url: string;
   is_halal: boolean;
   rating: number;
-  // 3D booth coordinates in 1 Utama Food District model
+  // 3D booth coordinates in 1Main Food District model
   coord_3d: {
     x: number;
     y: number;
