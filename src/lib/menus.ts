@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ONE_MAIN_STALLS } from "@/data/oneMainStalls";
 import { MenuItem } from "@/types";
-const KEY = "digital_niaga_menus_v1";
+const KEY = "digital_niaga_kim_seng_menus_v1";
 export function readMenus(): Record<string, MenuItem[]> {
   try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; }
 }

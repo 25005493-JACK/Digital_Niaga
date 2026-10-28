@@ -107,7 +107,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 {matchingStalls.length > 0 && (
                   <div>
                     <div className="text-[11px] font-bold uppercase tracking-wider text-accent px-3 py-1 flex items-center gap-1.5">
-                      <MapPin className="w-3 h-3" /> Stalls in 1Main Food District
+                      <MapPin className="w-3 h-3" /> Stalls in Restoran Kim Seng
                     </div>
                     <div className="space-y-1 mt-1">
                       {matchingStalls.map((s) => (

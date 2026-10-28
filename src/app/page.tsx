@@ -56,12 +56,12 @@ export default function HomePage() {
         {/* Hero Section */}
         <section className="relative isolate overflow-visible rounded-[28px] border border-line bg-surface px-5 pb-8 pt-12 text-center sm:px-10 sm:pb-10 sm:pt-16">
           <div className="hero-dots pointer-events-none absolute inset-0 z-0 rounded-[28px] opacity-50" />
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">1Main Food District</p>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-accent">Restoran Kim Seng</p>
           <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-5xl lg:text-6xl">
             Good food, easy to find.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted sm:text-base">
-            Explore a Food District-inspired hall, browse demo menus, and try the interactive stall finder.
+            Discover 11 local stalls at our collaborator, Restoran Kim Seng in Seksyen 17.
           </p>
           <div className="mx-auto mt-8 w-full max-w-3xl text-left">
             <SearchInput
@@ -86,7 +86,7 @@ export default function HomePage() {
             <div className="text-xs text-muted">
               Showing{" "}
               <span className="text-accent font-bold">{filteredStalls.length}</span>{" "}
-              sample stalls
+              stalls
             </div>
           </div>
 
@@ -103,7 +103,7 @@ export default function HomePage() {
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Find your way</p>
               <h2 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Explore the 3D map</h2>
             </div>
-            <p className="max-w-md text-sm text-muted">Explore the 1Main Food District demo scene. Select a booth to open its menu.</p>
+            <p className="max-w-md text-sm text-muted">Explore the Restoran Kim Seng demo scene. Select a booth to open its menu.</p>
           </div>
           <FoodCourt3D
             stalls={stalls}
@@ -113,7 +113,7 @@ export default function HomePage() {
             resetToken={resetToken}
           />
           <p className="text-xs leading-relaxed text-muted">
-            The hall outline and booth positions are illustrative for the 1Main Food District demo.
+            Stall positions follow the supplied floor plan; dimensions are approximate. Menus await owner updates.
           </p>
         </section>
 
@@ -129,7 +129,7 @@ export default function HomePage() {
           Empowering Malaysian Hawkers with Spatial Discovery & Photo Menus.
         </p>
         <p className="text-[11px] text-muted">
-          Demo Location: 1Main Food District.
+          Community collaborator: Restoran Kim Seng.
         </p>
       </footer>
 

@@ -21,6 +21,20 @@ export const StallMesh: React.FC<StallMeshProps> = ({
   const [hovered, setHovered] = useState(false);
   const { x, y, z, rotationY = 0, boothWidth = 2.2, boothDepth = 2, color = "#b65b42" } = stall.coord_3d;
 
+  const foodLabels: Record<string, string> = {
+    "stall-01": "Beverages",
+    "stall-02": "Mixed Rice",
+    "stall-03": "Pau",
+    "stall-04": "Stir-fry",
+    "stall-05": "Guizhou Food",
+    "stall-06": "Pork Noodles",
+    "stall-07": "Chicken Rice",
+    "stall-08": "Kolo Mee",
+    "stall-09": "Pan Mee",
+    "stall-10": "Porridge",
+    "stall-11": "Bamboo Noodles",
+  };
+
   // Gentle pulse animation when selected
   useFrame((state) => {
     if (meshRef.current && isSelected) {
@@ -76,17 +90,8 @@ export const StallMesh: React.FC<StallMeshProps> = ({
           <meshStandardMaterial color="#303737" emissive="#28342f" emissiveIntensity={0.2} />
         </mesh>
       ))}
-      <mesh position={[0, 2.39, 0]}>
-        <boxGeometry args={[boothWidth + 0.2, 0.58, boothDepth + 0.1]} />
-        <meshStandardMaterial
-          color={isSelected ? color : "#353b39"}
-          emissive={isSelected ? color : "#131615"}
-          emissiveIntensity={isSelected ? 0.22 : 0.1}
-        />
-      </mesh>
-
       {/* A restrained colour stripe keeps the selected counter easy to find. */}
-      <mesh position={[0, 2.05, boothDepth * 0.53]}>
+      <mesh position={[0, 0.98, boothDepth * 0.36]}>
         <boxGeometry args={[boothWidth + 0.18, 0.06, 0.06]} />
         <meshStandardMaterial color={color} />
       </mesh>
@@ -105,9 +110,8 @@ export const StallMesh: React.FC<StallMeshProps> = ({
       )}
 
       <Html
-        position={[0, 2.82, 0]}
+        position={[0, 1.2, 0]}
         center
-        distanceFactor={12}
         className="pointer-events-auto select-none"
       >
         <button
@@ -126,7 +130,7 @@ export const StallMesh: React.FC<StallMeshProps> = ({
           }`}
         >
           <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: color }} />
-          <span>{stall.stall_number.replace("Booth ", "")}</span>
+          <span className="flex flex-col items-start text-left leading-snug"><span>{foodLabels[stall.id] ?? stall.name}</span>{(hovered || isSelected) && <span className="mt-0.5 max-w-[200px] whitespace-normal text-[11px] font-medium">{stall.name}</span>}</span>
         </button>
       </Html>
     </group>

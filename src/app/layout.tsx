@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Digital Niaga — 1Main Food District Hawker Platform",
+  title: "Digital Niaga — Restoran Kim Seng Hawker Platform",
   description:
-    "Explore authentic Malaysian hawker stalls in 3D at 1Main Food District. Photo menus managed by stall owners by Digital Niaga (SULAM WIX2001).",
+    "Explore authentic Malaysian hawker stalls in 3D at Restoran Kim Seng. Photo menus managed by stall owners by Digital Niaga (SULAM WIX2001).",
   keywords: [
     "Digital Niaga",
-    "1Main Food District",
+    "Restoran Kim Seng",
     "Hawker Center",
     "Malaysian Street Food",
     "3D Hawker Map",
