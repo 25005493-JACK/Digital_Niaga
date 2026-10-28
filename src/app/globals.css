@@ -93,3 +93,24 @@ body {
     display: none !important;
   }
 }
+
+/* Keep owner controls readable and comfortable on touch screens. */
+.owner-portal input:not([type="checkbox"]):not([type="file"]),
+.owner-portal select,
+.owner-portal textarea {
+  min-height: 48px;
+  min-width: 0;
+  font-size: 16px;
+}
+.owner-portal button { min-height: 44px; touch-action: manipulation; }
+.menu-toggles label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+.menu-toggles input { width: 20px; height: 20px; accent-color: #137568; }
+.menu-save-bar { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+:focus-visible { outline: 2px solid #137568; outline-offset: 3px; }
+@media (max-width: 639px) {
+  input, select, textarea { font-size: 16px !important; }
+  [role="dialog"] { padding-bottom: env(safe-area-inset-bottom); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

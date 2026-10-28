@@ -69,7 +69,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         <div className="relative flex items-center bg-surface rounded-xl border border-line px-4 py-3 sm:py-3.5 shadow-sm transition-colors focus-within:border-accent">
           <Search className="w-5 h-5 text-accent shrink-0 mr-3" />
           <input
-            type="text"
+            type="search"
+            aria-label="Search stalls or dishes"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -77,7 +78,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             }}
             onFocus={() => setIsOpen(true)}
             placeholder="Search stalls or dishes"
-            className="w-full bg-transparent text-ink placeholder-slate-400 text-sm sm:text-base outline-none"
+            className="min-w-0 w-full bg-transparent text-ink placeholder-slate-400 text-sm sm:text-base outline-none"
           />
           {query && (
             <button
@@ -85,7 +86,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 setQuery("");
                 setIsOpen(false);
               }}
-              className="p-1 rounded-full text-muted hover:text-ink hover:bg-surface-subtle"
+              aria-label="Clear search"
+              className="min-h-11 min-w-11 flex items-center justify-center rounded-full text-muted hover:text-ink hover:bg-surface-subtle"
             >
               <X className="w-4 h-4" />
             </button>
@@ -94,7 +96,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
         {/* Autocomplete Results Dropdown */}
         {isOpen && query.trim() && (
-          <div className="absolute top-full mt-2 inset-x-0 glass-panel rounded-2xl p-2 shadow-sm z-40 max-h-[70vh] overflow-y-auto border border-line animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute top-full mt-2 inset-x-0 glass-panel rounded-2xl p-2 shadow-sm z-40 max-h-[55dvh] sm:max-h-[70vh] overflow-y-auto border border-line animate-in fade-in zoom-in-95 duration-150">
             {matchingStalls.length === 0 && matchingDishes.length === 0 ? (
               <div className="p-6 text-center text-muted text-sm">
                 No matching stalls or dishes found for <span className="text-accent font-medium">&quot;{query}&quot;</span>.
@@ -117,18 +119,18 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                           }}
                           className="w-full text-left flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-subtle transition-all group"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="min-w-0 flex items-center gap-2 sm:gap-3">
                             <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-accent-soft text-accent border border-accent/30">
                               {s.stall_number}
                             </span>
-                            <div>
+                            <div className="min-w-0">
                               <p className="text-sm font-semibold text-ink group-hover:text-accent transition-colors">
                                 {s.name}
                               </p>
                               <p className="text-xs text-muted line-clamp-1">{s.tagline}</p>
                             </div>
                           </div>
-                          <span className="text-xs text-accent font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                          <span className="text-xs text-accent font-medium hidden sm:flex shrink-0 opacity-0 group-hover:opacity-100 transition-opacity items-center gap-1">
                             Locate in 3D <ArrowRight className="w-3 h-3" />
                           </span>
                         </button>
@@ -153,11 +155,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                           }}
                           className="w-full text-left flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-subtle transition-all group"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="min-w-0 flex items-center gap-2 sm:gap-3">
                             <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-line">
-                              <Image src={dish.image_url} alt={dish.name} fill sizes="32px" className="object-cover" />
+                              <Image src={dish.image_url || stall.banner_url} alt={dish.name} fill sizes="32px" className="object-cover" />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                               <p className="text-sm font-semibold text-ink group-hover:text-amber-700 transition-colors">
                                 {dish.name}
                               </p>
@@ -166,7 +168,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs font-bold text-accent">
+                          <span className="shrink-0 ml-2 text-xs font-bold text-accent">
                             RM {dish.price.toFixed(2)}
                           </span>
                         </button>
@@ -188,7 +190,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             <button
               key={cat}
               onClick={() => onSelectCategory(cat)}
-              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`min-h-11 shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                 isSelected
                   ? "bg-accent text-white"
                   : "bg-surface text-muted hover:text-ink hover:bg-surface-subtle border border-line"
