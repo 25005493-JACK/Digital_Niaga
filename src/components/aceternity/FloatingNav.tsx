@@ -8,8 +8,6 @@ import { BrandLogo } from "@/components/shared/BrandLogo";
 const navLinks = [
   { href: "#stalls", label: "Explore stalls" },
   { href: "#explore-3d", label: "3D map" },
-  { href: "/pos", label: "Cashier" },
-  { href: "/kitchen", label: "Kitchen" },
 ];
 
 export const FloatingNav = () => {
@@ -26,7 +24,7 @@ export const FloatingNav = () => {
             </Link>
           ))}
           <Link href="/portal" className="ml-3 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover">
-            Staff portal
+            Owner portal
           </Link>
         </div>
         <button
@@ -47,7 +45,7 @@ export const FloatingNav = () => {
             </Link>
           ))}
           <Link href="/portal" onClick={() => setMobileMenuOpen(false)} className="mt-1 rounded-lg bg-accent px-3 py-2.5 text-center text-sm font-semibold text-white">
-            Staff portal
+            Owner portal
           </Link>
         </div>
       )}

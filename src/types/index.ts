@@ -50,34 +50,3 @@ export interface Stall {
   };
   menu: MenuItem[];
 }
-
-export type OrderType = "dine_in" | "takeaway";
-export type PaymentMethod = "cash" | "duitnow_qr";
-export type PaymentStatus = "unpaid" | "verified";
-export type OrderStatus = "pending" | "preparing" | "ready" | "completed" | "cancelled";
-
-export interface OrderItem {
-  id: string;
-  menu_item_id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  notes?: string;
-}
-
-export interface Order {
-  id: string;
-  stall_id: string;
-  order_number: string;
-  order_type: OrderType;
-  table_number?: string;
-  items: OrderItem[];
-  total_amount: number;
-  payment_method: PaymentMethod;
-  payment_status: PaymentStatus;
-  order_status: OrderStatus;
-  cashier_id: string;
-  cashier_name: string;
-  created_at: string;
-  updated_at: string;
-}

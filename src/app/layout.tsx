@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Digital Niaga — 1Main Food District Hawker Platform",
   description:
-    "Explore authentic Malaysian hawker stalls in 3D at 1Main Food District. Integrated cashier-to-kitchen ordering system by Digital Niaga (SULAM WIX2001).",
+    "Explore authentic Malaysian hawker stalls in 3D at 1Main Food District. Photo menus managed by stall owners by Digital Niaga (SULAM WIX2001).",
   keywords: [
     "Digital Niaga",
     "1Main Food District",

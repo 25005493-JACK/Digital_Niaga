@@ -6,11 +6,13 @@ import { FoodCourt3D } from "@/components/3d/FoodCourt3D";
 import { SearchInput } from "@/components/aceternity/SearchInput";
 import { BentoGrid } from "@/components/aceternity/BentoGrid";
 import { StallModal } from "@/components/ui/StallModal";
-import { ONE_MAIN_STALLS, HAWKER_CENTRE_INFO } from "@/data/oneMainStalls";
+import { HAWKER_CENTRE_INFO } from "@/data/oneMainStalls";
 import { Stall } from "@/types";
+import { useStalls } from "@/lib/menus";
 import { MapPin } from "lucide-react";
 
 export default function HomePage() {
+  const stalls = useStalls();
   const [selectedStall, setSelectedStall] = useState<Stall | null>(null);
   const [resetToken, setResetToken] = useState(0);
   const [modalStall, setModalStall] = useState<Stall | null>(null);
@@ -18,16 +20,16 @@ export default function HomePage() {
 
   // Filter stalls based on category
   const filteredStalls = useMemo(() => {
-    if (selectedCategory === "All") return ONE_MAIN_STALLS;
+    if (selectedCategory === "All") return stalls;
     if (selectedCategory === "Halal / Muslim-Friendly") {
-      return ONE_MAIN_STALLS.filter((s) => s.is_halal);
+      return stalls.filter((s) => s.is_halal);
     }
-    return ONE_MAIN_STALLS.filter(
+    return stalls.filter(
       (s) =>
         s.category === selectedCategory ||
         s.cuisines.some((c) => c.toLowerCase().includes(selectedCategory.toLowerCase()))
     );
-  }, [selectedCategory]);
+  }, [selectedCategory, stalls]);
 
   const handleSelectStallFromSearch = (stall: Stall) => {
     setSelectedStall(stall);
@@ -63,7 +65,7 @@ export default function HomePage() {
           </p>
           <div className="mx-auto mt-8 w-full max-w-3xl text-left">
             <SearchInput
-              stalls={ONE_MAIN_STALLS}
+              stalls={stalls}
               onSelectStall={handleSelectStallFromSearch}
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
@@ -104,7 +106,7 @@ export default function HomePage() {
             <p className="max-w-md text-sm text-muted">Explore the 1Main Food District demo scene. Select a booth to open its menu.</p>
           </div>
           <FoodCourt3D
-            stalls={ONE_MAIN_STALLS}
+            stalls={stalls}
             activeStall={selectedStall}
             onSelectStall={handleSelectStallIn3D}
             onResetView={handleReset3D}
@@ -115,36 +117,7 @@ export default function HomePage() {
           </p>
         </section>
 
-        {/* Cashier to Kitchen SULAM Showcase Info */}
-        <section className="rounded-2xl border border-line bg-surface p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 max-w-xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">For stall teams</p>
-            <h3 className="text-xl font-semibold text-ink sm:text-2xl">Run your counter and kitchen</h3>
-            <p className="text-sm text-secondary leading-relaxed">
-              Open the demo stall terminal to use the touch-friendly <strong>Cashier POS</strong> (with simulated QR payment and digital chits) and the <strong>Kitchen Display System (KDS)</strong> in another tab of the same browser.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <a
-              href="/pos"
-              className="px-4 py-2.5 rounded-lg border border-line text-secondary text-xs sm:text-sm font-semibold transition-colors hover:bg-surface-subtle"
-            >
-              Launch Cashier POS
-            </a>
-            <a
-              href="/kitchen"
-              className="px-4 py-2.5 rounded-lg border border-line text-secondary text-xs sm:text-sm font-semibold transition-colors hover:bg-surface-subtle"
-            >
-              Launch Kitchen KDS
-            </a>
-            <a
-              href="/portal"
-              className="px-4 py-2.5 rounded-lg bg-accent hover:bg-accent-hover text-white text-xs sm:text-sm font-semibold transition-colors"
-            >
-              Stall Switcher Hub
-            </a>
-          </div>
-        </section>
+        <section className="rounded-2xl border border-line bg-surface p-8 flex flex-wrap justify-between gap-6"><div><h3 className="text-2xl font-semibold">Keep your menu fresh</h3><p className="text-secondary mt-2">Update dishes, prices, and photos in your stall owner portal.</p></div><a href="/portal" className="rounded-lg bg-accent text-white px-4 py-3">Manage your menu</a></section>
       </main>
 
       {/* Footer */}
@@ -153,7 +126,7 @@ export default function HomePage() {
           Digital Niaga — WIX2001 Service Learning (SULAM) Initiative
         </p>
         <p>
-          Empowering Malaysian Hawkers with Spatial Discovery & Realtime Order Management.
+          Empowering Malaysian Hawkers with Spatial Discovery & Photo Menus.
         </p>
         <p className="text-[11px] text-muted">
           Demo Location: 1Main Food District.
@@ -162,7 +135,7 @@ export default function HomePage() {
 
       {/* Stall Detail & Photo Menu Modal / Bottom Sheet */}
       <StallModal
-        stall={modalStall}
+        stall={modalStall ? stalls.find(s => s.id === modalStall.id) ?? modalStall : null}
         onClose={() => setModalStall(null)}
         onLocateIn3D={handleSelectStallIn3D}
       />

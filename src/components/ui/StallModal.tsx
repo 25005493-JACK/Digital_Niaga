@@ -138,7 +138,7 @@ export const StallModal: React.FC<StallModalProps> = ({
                 >
                   <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 bg-surface-subtle border border-line">
                     <Image
-                      src={item.image_url}
+                      src={item.image_url || stall.banner_url}
                       alt={item.name}
                       fill
                       sizes="(max-width: 640px) 64px, 80px"
@@ -151,6 +151,7 @@ export const StallModal: React.FC<StallModalProps> = ({
                         <span className="text-sm font-bold text-ink truncate">
                           {item.name}
                         </span>
+                        {!item.is_available && <span className="text-xs text-muted">Sold out</span>}
                         {item.is_signature && (
                           <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700 border border-amber-500/30 shrink-0">
                             Signature

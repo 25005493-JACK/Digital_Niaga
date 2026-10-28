@@ -1,59 +1,28 @@
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const { chromium } = require("playwright-core");
-
-const browserPath = process.env.BROWSER_PATH || "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const baseUrl = process.env.TEST_BASE_URL || "http://127.0.0.1:3087";
-
-async function main() {
-  if (!fs.existsSync(browserPath)) throw new Error(`Browser not found: ${browserPath}`);
-  const browser = await chromium.launch({ executablePath: browserPath, headless: true });
-  try {
-    const context = await browser.newContext();
-    const pos = await context.newPage();
-    await pos.goto(`${baseUrl}/portal`);
-    await pos.getByRole("button", { name: /Booth #03/ }).click();
-    await pos.getByRole("link", { name: /Launch Cashier POS \(Booth #03\)/ }).click();
-    await pos.waitForURL(/\/pos\?stall=stall-03/);
-    await pos.waitForFunction(() => document.querySelector("select")?.value === "stall-03");
-
-    const kitchen = await context.newPage();
-    await kitchen.goto(`${baseUrl}/kitchen?stall=stall-03`);
-    await kitchen.waitForFunction(() => document.querySelector("select")?.value === "stall-03");
-
-    await pos.locator("section .grid button").first().click();
-    await pos.getByRole("button", { name: /Collect Payment & Verify/ }).click();
-    await pos.getByRole("button", { name: "Cash Payment" }).click();
-    const confirm = pos.getByRole("button", { name: /Confirm Cash & Send Chit/ });
-    assert.equal(await confirm.isDisabled(), true, "empty cash amount must not confirm");
-    await pos.locator('input[type="number"]').fill("0");
-    assert.equal(await confirm.isDisabled(), true, "insufficient cash must not confirm");
-    await pos.locator('input[type="number"]').fill("100");
-    assert.equal(await confirm.isEnabled(), true);
-    await confirm.click();
-    await pos.locator(".receipt-box").waitFor();
-
-    const order = await pos.evaluate(() => {
-      const orders = JSON.parse(localStorage.getItem("digital_niaga_orders_v1"));
-      return orders[0];
-    });
-    assert.equal(order.stall_id, "stall-03");
-    assert.equal(order.payment_method, "cash");
-    assert.equal(order.order_status, "pending");
-
-    await kitchen.getByText(order.order_number).waitFor();
-    await kitchen.getByRole("button", { name: /Start Cooking/ }).click();
-
-    const receipt = await context.newPage();
-    await receipt.goto(`${baseUrl}/receipt/${order.id}`);
-    await receipt.getByText("Kitchen is cooking your meal now...").waitFor();
-
-    await kitchen.getByRole("button", { name: /Food Ready for Pickup/ }).click();
-    await receipt.getByText("Your order is ready! Please pick up at the counter.").waitFor();
-    console.log(`Browser flow passed: ${order.order_number} (${order.id})`);
-  } finally {
-    await browser.close();
-  }
-}
-
-main().catch((error) => { console.error(error); process.exitCode = 1; });
+const assert=require('node:assert/strict');
+const {chromium}=require('playwright-core');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.BROWSER_PATH||'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',headless:true});
+ try {
+  const context=await browser.newContext(); const page=await context.newPage();
+  await page.goto((process.env.TEST_BASE_URL||'http://127.0.0.1:3087')+'/portal');
+  const card=page.locator('article').first();
+  const original=await card.getByLabel('Dish name',{exact:true}).inputValue();
+  await card.getByLabel('Dish name',{exact:true}).fill('Browser test dish');
+  await card.getByLabel('Price (RM)').fill('12.34');
+  await card.getByLabel('Dish photo').setInputFiles({name:'dish.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4xQAAAAASUVORK5CYII=','base64')});
+  await page.getByRole('button',{name:'Save menu',exact:true}).waitFor();
+  await page.getByRole('button',{name:/Move down Browser test dish/}).click();
+  await page.getByRole('button',{name:'Save menu',exact:true}).click();
+  await page.getByRole('status').filter({hasText:'Menu saved'}).waitFor();
+  await page.reload();
+  await page.waitForFunction(() => document.querySelectorAll('article')[1]?.querySelector('input[maxlength="120"]')?.value === 'Browser test dish');
+  assert.equal(await page.locator('article').nth(1).getByLabel('Dish name',{exact:true}).inputValue(),'Browser test dish');
+  await page.getByLabel('Your stall').selectOption('stall-02');
+  assert.notEqual(await page.locator('article').first().getByLabel('Dish name',{exact:true}).inputValue(),'Browser test dish');
+  await page.goto((process.env.TEST_BASE_URL||'http://127.0.0.1:3087')+'/');
+  await page.locator('article').first().getByRole('button',{name:'View menu'}).click();
+  await page.getByRole('dialog').getByText('Browser test dish',{exact:true}).waitFor();
+  for(const route of ['/pos','/kitchen']) {const response=await page.goto((process.env.TEST_BASE_URL||'http://127.0.0.1:3087')+route); assert.equal(response.status(),404);}
+  console.log('Menu editing, upload, reordering, persistence, stall isolation, public display and removed routes passed.');
+ } finally {await browser.close();}
+})().catch(e=>{console.error(e);process.exit(1)});
