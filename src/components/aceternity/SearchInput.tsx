@@ -56,7 +56,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     "All",
     "Rice Dishes",
     "Noodles & Soups",
-    "Halal / Muslim-Friendly",
     "Malaysian Local",
     "Vegetarian",
     "Beverages",

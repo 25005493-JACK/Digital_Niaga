@@ -21,9 +21,6 @@ export default function HomePage() {
   // Filter stalls based on category
   const filteredStalls = useMemo(() => {
     if (selectedCategory === "All") return stalls;
-    if (selectedCategory === "Halal / Muslim-Friendly") {
-      return stalls.filter((s) => s.is_halal);
-    }
     return stalls.filter(
       (s) =>
         s.category === selectedCategory ||

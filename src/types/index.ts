@@ -5,7 +5,6 @@ export type StallCategory =
   | "Rice Dishes"
   | "Snacks & Desserts"
   | "Beverages"
-  | "Halal / Muslim-Friendly"
   | "Vegetarian";
 
 export interface MenuItem {
